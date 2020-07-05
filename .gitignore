@@ -1,3 +1,6 @@
+# CMake build directory
+build
+
 # Prerequisites
 *.d
 
@@ -24,7 +27,7 @@
 *.lai
 *.la
 *.a
-*.lib
+# *.lib
 
 # Executables
 *.exe
