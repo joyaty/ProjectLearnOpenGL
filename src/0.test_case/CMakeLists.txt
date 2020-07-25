@@ -9,7 +9,14 @@ include_directories(${PROJECT_SOURCE_DIR}/../../external/glad/include)
 
 link_directories(${PROJECT_SOURCE_DIR}/../../external/glfw/lib)
 
-add_executable(${PROJECT_NAME} main.cpp)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
+set(ALL_FILES 
+main.cpp
+draw_triangle.cpp
+)
+
+add_executable(${PROJECT_NAME} WIN32 ${ALL_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "ProjectLearnOpenGL")
 

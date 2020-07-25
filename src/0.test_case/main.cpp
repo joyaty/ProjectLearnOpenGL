@@ -1,10 +1,13 @@
-#include<iostream>
+ï»¿#include<iostream>
 
 #include<glad/glad.h>
 #include<glfw3.h>
 
-void framebuffer_size_callback(GLFWwindow*, int, int);
-void processInput(GLFWwindow*);
+void Framebuffer_size_callback(GLFWwindow*, int, int);
+void ProcessInput(GLFWwindow*);
+
+bool InitializeShader();
+void DrawTriangle();
 
 int main()
 {
@@ -33,22 +36,31 @@ int main()
 	}
 
 	glViewport(0, 0, 800, 600);
+	glfwSetFramebufferSizeCallback(pWindow, Framebuffer_size_callback);
 
-	glfwSetFramebufferSizeCallback(pWindow, framebuffer_size_callback);
+	if (!InitializeShader())
+	{
+		std::cout << "Failed to intialize shaders." << std::endl;
+		glfwTerminate();
+
+		return -1;
+	}
 
 	while (!glfwWindowShouldClose(pWindow))
 	{
-		// ´¦ÀíÊäÈë
-		processInput(pWindow);
+		// å¤„ç†è¾“å…¥
+		ProcessInput(pWindow);
 
-		// äÖÈ¾Ö¸Áî
+		// æ¸²æŸ“æŒ‡ä»¤
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// ¼ì²é²¢µ÷ÓÃÊÂ¼þ
+		DrawTriangle();
+
+		// æ£€æŸ¥å¹¶è°ƒç”¨äº‹ä»¶
 		glfwPollEvents();
 
-		// ½»»»»º³å
+		// äº¤æ¢ç¼“å†²
 		glfwSwapBuffers(pWindow);
 	}
 
@@ -57,12 +69,12 @@ int main()
 	return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height)
+void Framebuffer_size_callback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* pWindow)
+void ProcessInput(GLFWwindow* pWindow)
 {
 	if (glfwGetKey(pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
