@@ -7,7 +7,7 @@ const char* vertexShaderSource = "#version 330 core\n"
 "void main()\n"
 "{\n"
 	"gl_Position = vec4(a_position.x, a_position.y, a_position.z, 1.0);\n"
-"}\n";
+"}\0";
 
 // Fragment Shader Code
 const char* fragmentShaderSource = "#version 330 core\n"
@@ -15,8 +15,11 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "void main()\n"
 "{\n"
 	"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n";
+"}\0";
 
+// shaderProgram
+unsigned int shaderProgram{};
+// 初始化Shader(创建VertexShader和FragmentShader，链接为ShaderProgram)
 bool InitializeShader()
 {
 	// 1. 编译Vertex Shader
@@ -62,7 +65,6 @@ bool InitializeShader()
 
 	// 3. 链接Vertex Shader和Fragment Shader为一个Shader Program，最终渲染时需要使用被激活的Shader Program渲染。
 	// 创建Shader Program并生成一个Shader Program ID
-	unsigned int shaderProgram;
 	shaderProgram = glCreateProgram();
 	// 附加Vertex Shader和Fragment Shader
 	glAttachShader(shaderProgram, vertexShader);
@@ -85,16 +87,15 @@ bool InitializeShader()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	// 5. 激活Shader Program，渲染时将使用此Shader Program进行渲染
-	glUseProgram(shaderProgram);
-
 	return true;
 }
 
-// 绘制一个三角形
-void DrawTriangle()
+// 定义VAO引用ID
+unsigned int VAO;
+// 初始化三角形顶点数据（绑定VAO，绑定VBO，拷贝顶点数据到VBO管理的内存中，配置顶点属性指针，最后可以解绑VAO）
+void InitializeTriangleVertex()
 {
-	// 三角形的三个顶点，Normalized Device Coordinate()
+	// 三角形的三个顶点，Normalized Device Coordinate
 	float vertices[] =
 	{
 		-0.5f, -0.5f, 0.0f,
@@ -102,12 +103,40 @@ void DrawTriangle()
 		 0.0f,  0.5f, 0.0f
 	};
 
-	// 生成一个Buffer ID
+	// 定义VBO引用ID
 	unsigned int VBO;
+	// 创建VAO
+	glGenVertexArrays(1, &VAO);
+	// 创建VBO
 	glGenBuffers(1, &VBO);
 
-	// 绑定到一个顶点数组缓冲区
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// 绑定VAO
+	glBindVertexArray(VAO);
 
+	// 绑定VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// 拷贝顶点数据到VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// 配置顶点属性指针，启动顶点着色器顶点属性
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// 解绑VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// 解绑VAO
+	glBindVertexArray(0);
+}
+
+// 绘制一个三角形
+void DrawTriangle()
+{
+	// 启用要使用的ShaderProgram
+	glUseProgram(shaderProgram);
+	// 绑定相应的VAO
+	glBindVertexArray(VAO);
+	// 绘制
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	// 解绑VAO
+	glBindVertexArray(0);
 }

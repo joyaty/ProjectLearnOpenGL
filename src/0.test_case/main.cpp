@@ -7,6 +7,7 @@ void Framebuffer_size_callback(GLFWwindow*, int, int);
 void ProcessInput(GLFWwindow*);
 
 bool InitializeShader();
+void InitializeTriangleVertex();
 void DrawTriangle();
 
 int main()
@@ -38,6 +39,7 @@ int main()
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(pWindow, Framebuffer_size_callback);
 
+	// 初始化Shader
 	if (!InitializeShader())
 	{
 		std::cout << "Failed to intialize shaders." << std::endl;
@@ -45,7 +47,10 @@ int main()
 
 		return -1;
 	}
+	// 初始化三角形的顶点
+	InitializeTriangleVertex();
 
+	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		// 处理输入
@@ -55,6 +60,7 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// 绘制三角形
 		DrawTriangle();
 
 		// 检查并调用事件
