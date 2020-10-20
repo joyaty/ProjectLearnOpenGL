@@ -6,9 +6,26 @@
 void Framebuffer_size_callback(GLFWwindow*, int, int);
 void ProcessInput(GLFWwindow*);
 
+// 初始化Shader
 bool InitializeShader();
+// 三角形 VAO和VBO
 void InitializeTriangleVertex();
 void DrawTriangle();
+// 矩形 EBO
+void InitializeRectangle();
+void DrawRectangle();
+
+// 调试
+void EnableWireframwMode();
+void DisableWireframwMode();
+
+// 练习1 使用一个VAO和VBO绘制两个三角形
+void InitializeTwoTriangleWithOneVBO();
+void DrawTwoTriangleWithOneVBO();
+
+// 练习2 使用两个VAO和VBO绘制三角形
+void InitializeTwoTriangleWithTwoVBO();
+void DrawTwoTriangleWithTwoVBO();
 
 int main()
 {
@@ -47,8 +64,20 @@ int main()
 
 		return -1;
 	}
-	// 初始化三角形的顶点
-	InitializeTriangleVertex();
+	//// 初始化三角形的顶点
+	//InitializeTriangleVertex();
+
+	//// 初始化矩形的顶点
+	//InitializeRectangle();
+
+	//// 练习1 初始化两个三角形
+	//InitializeTwoTriangleWithOneVBO();
+
+	// 练习2 使用两个VAO和VBO绘制三角形
+	InitializeTwoTriangleWithTwoVBO();
+
+	// 线框模式
+	DisableWireframwMode();
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
@@ -60,8 +89,17 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// 绘制三角形
-		DrawTriangle();
+		//// 绘制三角形
+		//DrawTriangle();
+
+		//// 绘制矩形
+		//DrawRectangle();
+
+		//// 练习1 绘制两个三角形
+		//DrawTwoTriangleWithOneVBO();
+
+		// 练习2 使用两个VAO和VBO绘制三角形
+		DrawTwoTriangleWithTwoVBO();
 
 		// 检查并调用事件
 		glfwPollEvents();
