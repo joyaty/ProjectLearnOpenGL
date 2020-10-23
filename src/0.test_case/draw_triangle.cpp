@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 #include <glad/glad.h>
+#include <glfw3.h>
+#include "utils/Shader.h"
 
 ///////////////////////////////////////////////////////////////////////
 // Debug
@@ -42,25 +44,51 @@ const char* fragmentShaderSourceOrange = "#version 330 core\n"
 // Fragment Shader Code
 const char* fragmentShaderSourceYellow = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 uniformColor;\n"
 "void main()\n"
 "{\n"
-"FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f);\n"
+"	FragColor = uniformColor;\n"
+"}\0";
+
+const char* vertexShaderSourceWithColorAttrib = "#version 330 core\n"
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 1) in vec3 aVertexColor;\n"
+"out vec3 oVertexColor;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = vec4(aPos, 1.0);\n"
+"	oVertexColor = aVertexColor;\n"
+"}\0";
+
+const char* fragmentShaderSourceWithColorAttrib = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"in vec3 oVertexColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(oVertexColor, 1.0);\n"
 "}\0";
 
 // shaderProgram
 unsigned int shaderProgram{};
 unsigned int shaderProgramArray[2];
+unsigned int shaderProgramWithColorAttrib;
+Shader shader;
+
 // 初始化Shader(创建VertexShader和FragmentShader，链接为ShaderProgram)
 bool InitializeShader()
 {
 	// 1. 编译Vertex Shader
 	// 生成Vertex Shader ID
 	unsigned int vertexShader;
+	unsigned int vertextShaderWithColorAttrib;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	vertextShaderWithColorAttrib = glCreateShader(GL_VERTEX_SHADER);
 	// 绑定Shader源码字符串到生成的Vertext Shader ID
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glShaderSource(vertextShaderWithColorAttrib, 1, &vertexShaderSourceWithColorAttrib, NULL);
 	// 编译Shader
 	glCompileShader(vertexShader);
+	glCompileShader(vertextShaderWithColorAttrib);
 	// 检查Shader编译的状态，如果错误，输出错误信息
 	int nSuccess;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &nSuccess);
@@ -73,19 +101,32 @@ bool InitializeShader()
 
 		return false;
 	}
+	glGetShaderiv(vertextShaderWithColorAttrib, GL_COMPILE_STATUS, &nSuccess);
+	if (!nSuccess)
+	{
+		char infoLog[512];
+		glGetShaderInfoLog(vertextShaderWithColorAttrib, sizeof(infoLog), NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED \n" << infoLog << std::endl;
+
+		return false;
+	}
 
 	// 2. 编译Fragment Shader
 	// 生成Fragment Shader ID
 	unsigned int fragmentShaderOrange;
 	unsigned int fragmentShaderYellow;
+	unsigned int fragmentShaderWithColorAttrib;
 	fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
 	fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+	fragmentShaderWithColorAttrib = glCreateShader(GL_FRAGMENT_SHADER);
 	// 绑定Shader源码字符串到生成的Fragment Shader ID
 	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
 	glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
+	glShaderSource(fragmentShaderWithColorAttrib, 1, &fragmentShaderSourceWithColorAttrib, NULL);
 	// 编译Shader
 	glCompileShader(fragmentShaderOrange);
 	glCompileShader(fragmentShaderYellow);
+	glCompileShader(fragmentShaderWithColorAttrib);
 	// 检查Shader编译状态，如果错误，输出错误信息
 	glGetShaderiv(fragmentShaderOrange, GL_COMPILE_STATUS, &nSuccess);
 	if (!nSuccess)
@@ -97,7 +138,6 @@ bool InitializeShader()
 
 		return false;
 	}
-
 	glGetShaderiv(fragmentShaderYellow, GL_COMPILE_STATUS, &nSuccess);
 	if (!nSuccess)
 	{
@@ -108,19 +148,32 @@ bool InitializeShader()
 
 		return false;
 	}
+	glGetShaderiv(fragmentShaderWithColorAttrib, GL_COMPILE_STATUS, &nSuccess);
+	if (!nSuccess)
+	{
+		char infoLog[512];
+		glGetShaderInfoLog(fragmentShaderWithColorAttrib, sizeof(infoLog), NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED \n" << infoLog << std::endl;
+
+		return false;
+	}
 
 	// 3. 链接Vertex Shader和Fragment Shader为一个Shader Program，最终渲染时需要使用被激活的Shader Program渲染。
 	// 创建Shader Program并生成一个Shader Program ID
 	shaderProgram = glCreateProgram();
 	unsigned int shaderProgramYellow = glCreateProgram();
+	shaderProgramWithColorAttrib = glCreateProgram();
 	// 附加Vertex Shader和Fragment Shader
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShaderOrange);
 	glAttachShader(shaderProgramYellow, vertexShader);
 	glAttachShader(shaderProgramYellow, fragmentShaderYellow);
+	glAttachShader(shaderProgramWithColorAttrib, vertextShaderWithColorAttrib);
+	glAttachShader(shaderProgramWithColorAttrib, fragmentShaderWithColorAttrib);
 	// 链接Shader Program
 	glLinkProgram(shaderProgram);
 	glLinkProgram(shaderProgramYellow);
+	glLinkProgram(shaderProgramWithColorAttrib);
 	// 检查Program链接状态，如果错误，输出错误信息
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &nSuccess);
 	if (!nSuccess)
@@ -141,16 +194,27 @@ bool InitializeShader()
 
 		return false;
 	}
+	glGetProgramiv(shaderProgramWithColorAttrib, GL_LINK_STATUS, &nSuccess);
+	if (!nSuccess)
+	{
+		char infoLog[512];
+		glGetProgramInfoLog(shaderProgramWithColorAttrib, sizeof(infoLog), NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED \n" << infoLog << std::endl;
+
+		return false;
+	}
 
 	// 4. 链接Shader Program成功，可以删除Vertex Shader和Fragment Shader，不在需要她们了。
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShaderOrange);
 	glDeleteShader(fragmentShaderYellow);
+	glDeleteShader(vertextShaderWithColorAttrib);
+	glDeleteShader(fragmentShaderWithColorAttrib);
 
 	shaderProgramArray[0] = shaderProgram;
 	shaderProgramArray[1] = shaderProgramYellow;
 
-	return true;
+	return shader.initialize("../../../res/shaders/simplest_vertex_shader.vs", "../../../res/shaders/simplest_fragment_shader.fs");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -315,7 +379,6 @@ void DrawTwoTriangleWithOneVBO()
 
 /////////////////////////////////////////////////////////////////////////////////
 // 练习2 通过两个VBO绘制两个三角形
-
 unsigned int VAO_Array[2];
 void InitializeTwoTriangleWithTwoVBO()
 {
@@ -365,4 +428,72 @@ void DrawTwoTriangleWithTwoVBO()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// 使用Uniform渲染三角形
+void DrawTriangleWithUniform()
+{
+	// 查找Uniform位置值
+	int uniformColorLocation;
+	uniformColorLocation = glGetUniformLocation(shaderProgramArray[1], "uniformColor");
+	if (uniformColorLocation == -1)
+	{
+		std::cout << "ERROR::UNIFORM::LOCATION::NOT FOUND" << std::endl;
+		return;
+	}
+	// 根据时间变化Uniform颜色
+	float timeValue = glfwGetTime();
+	float greenValue = sin(timeValue) / 2.0f + 0.5f;
+	float redValue = cos(timeValue) / 2.0f + 0.5f;
+
+	// 启用目标ShaderProgram
+	glUseProgram(shaderProgramArray[1]);
+	// 设置Uniform的值
+	glUniform4f(uniformColorLocation, redValue, greenValue, 0.0f, 0.0f);
+	// 绑定VAO
+	glBindVertexArray(VAO);
+	// 绘制
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 使用更多的顶点属性
+unsigned int VAO_MoreAttrib;
+void InitializeTriangleWithMoreAttrib()
+{
+	float vertices[] = {
+		// position        // color
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left 
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top
+	};
+	// 绑定VAO
+	glGenVertexArrays(1, &VAO_MoreAttrib);
+	glBindVertexArray(VAO_MoreAttrib);
+	// 绑定并填充VBO
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	int value = sizeof(vertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 第一个顶点属性指针配置
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// 第二个顶点属性指针配置
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	// 解绑VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// 解绑VAO
+	glBindVertexArray(0);
+}
+
+void DrawTriangleWithMoreAttrib()
+{
+	shader.use();
+	glBindVertexArray(VAO_MoreAttrib);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
 }

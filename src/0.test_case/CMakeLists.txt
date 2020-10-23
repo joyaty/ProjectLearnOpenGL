@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.10)
 
 project("0.test_case")
 
@@ -12,8 +12,10 @@ link_directories(${PROJECT_SOURCE_DIR}/../../external/glfw/lib)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
 set(ALL_FILES 
-main.cpp
+utils/Shader.cpp
+utils/Shader.h
 draw_triangle.cpp
+main.cpp
 )
 
 add_executable(${PROJECT_NAME} WIN32 ${ALL_FILES})

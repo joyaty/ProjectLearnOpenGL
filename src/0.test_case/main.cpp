@@ -27,6 +27,13 @@ void DrawTwoTriangleWithOneVBO();
 void InitializeTwoTriangleWithTwoVBO();
 void DrawTwoTriangleWithTwoVBO();
 
+// 通过Uniform渲染三角形颜色
+void DrawTriangleWithUniform();
+
+// 添加顶点颜色属性，并绘制三角形
+void InitializeTriangleWithMoreAttrib();
+void DrawTriangleWithMoreAttrib();
+
 int main()
 {
 	// std::cout << "Hello, CMake" << std::endl;
@@ -64,20 +71,24 @@ int main()
 
 		return -1;
 	}
-	//// 初始化三角形的顶点
+
+	// 线框模式
+	//EnableWireframwMode();
+
+	// 初始化三角形的顶点
 	//InitializeTriangleVertex();
 
-	//// 初始化矩形的顶点
+	// 初始化矩形的顶点
 	//InitializeRectangle();
 
-	//// 练习1 初始化两个三角形
+	// 练习1 初始化两个三角形
 	//InitializeTwoTriangleWithOneVBO();
 
 	// 练习2 使用两个VAO和VBO绘制三角形
-	InitializeTwoTriangleWithTwoVBO();
+	//InitializeTwoTriangleWithTwoVBO();
 
-	// 线框模式
-	DisableWireframwMode();
+	// 添加顶点颜色属性，并绘制三角形
+	InitializeTriangleWithMoreAttrib();
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
@@ -98,8 +109,14 @@ int main()
 		//// 练习1 绘制两个三角形
 		//DrawTwoTriangleWithOneVBO();
 
-		// 练习2 使用两个VAO和VBO绘制三角形
-		DrawTwoTriangleWithTwoVBO();
+		//// 练习2 使用两个VAO和VBO绘制三角形
+		//DrawTwoTriangleWithTwoVBO();
+
+		// 通过uniform渲染三角形颜色
+		//DrawTriangleWithUniform();
+
+		// 添加顶点颜色属性绘制三角形
+		DrawTriangleWithMoreAttrib();
 
 		// 检查并调用事件
 		glfwPollEvents();
