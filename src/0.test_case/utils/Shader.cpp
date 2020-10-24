@@ -97,7 +97,7 @@ void Shader::use()
 void Shader::setBool(const std::string& strUniformName, bool bValue) const
 {
 	int nLocation = glGetUniformLocation(m_nProgramId, strUniformName.c_str());
-	if (nLocation > 0)
+	if (nLocation >= 0)
 	{
 		glUniform1i(nLocation, bValue);
 	}
@@ -106,7 +106,7 @@ void Shader::setBool(const std::string& strUniformName, bool bValue) const
 void Shader::setInt(const std::string& strUniformName, int nValue) const
 {
 	int nLocation = glGetUniformLocation(m_nProgramId, strUniformName.c_str());
-	if (nLocation > 0)
+	if (nLocation >= 0)
 	{
 		glUniform1i(nLocation, nValue);
 	}
@@ -115,7 +115,7 @@ void Shader::setInt(const std::string& strUniformName, int nValue) const
 void Shader::setFloat(const std::string& strUniformName, float fValue) const
 {
 	int nLocation = glGetUniformLocation(m_nProgramId, strUniformName.c_str());
-	if (nLocation > 0)
+	if (nLocation >= 0)
 	{
 		glUniform1f(nLocation, fValue);
 	}

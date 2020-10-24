@@ -493,6 +493,7 @@ void InitializeTriangleWithMoreAttrib()
 void DrawTriangleWithMoreAttrib()
 {
 	shader.use();
+	shader.setFloat("ufOffset", -0.0f);
 	glBindVertexArray(VAO_MoreAttrib);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
