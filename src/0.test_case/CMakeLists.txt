@@ -14,6 +14,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:
 set(ALL_FILES 
 utils/Shader.cpp
 utils/Shader.h
+utils/stb_image.h
 draw_triangle.cpp
 main.cpp
 )

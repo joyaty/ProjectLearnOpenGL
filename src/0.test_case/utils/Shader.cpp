@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iostream>
 
+// Shader根目录
+static const std::string strShaderBasePath = "../../../res/shaders/";
+
 Shader::Shader()
 {
 }
@@ -23,8 +26,8 @@ bool Shader::initialize(const char* strVertexShaderPath, const char* strFragment
 	try 
 	{
 		// 打开Shader文件
-		vShaderFile.open(strVertexShaderPath);
-		fShaderFile.open(strFragmentShaderPath);
+		vShaderFile.open(strShaderBasePath + strVertexShaderPath);
+		fShaderFile.open(strShaderBasePath + strFragmentShaderPath);
 		std::stringstream vShaderStream, fShaderStream;
 		// 将文件读入流
 		vShaderStream << vShaderFile.rdbuf();

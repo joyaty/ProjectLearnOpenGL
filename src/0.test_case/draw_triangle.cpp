@@ -214,7 +214,7 @@ bool InitializeShader()
 	shaderProgramArray[0] = shaderProgram;
 	shaderProgramArray[1] = shaderProgramYellow;
 
-	return shader.initialize("../../../res/shaders/simplest_vertex_shader.vs", "../../../res/shaders/simplest_fragment_shader.fs");
+	return shader.initialize("simplest_vertex_shader.vs", "simplest_fragment_shader.fs");
 }
 
 ///////////////////////////////////////////////////////////////////////

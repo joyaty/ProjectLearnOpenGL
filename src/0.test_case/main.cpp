@@ -34,6 +34,9 @@ void DrawTriangleWithUniform();
 void InitializeTriangleWithMoreAttrib();
 void DrawTriangleWithMoreAttrib();
 
+// 加载Image
+bool LoadImage(const std::string& strImageFile, unsigned char* pData);
+
 int main()
 {
 	// std::cout << "Hello, CMake" << std::endl;
@@ -89,6 +92,9 @@ int main()
 
 	// 添加顶点颜色属性，并绘制三角形
 	InitializeTriangleWithMoreAttrib();
+
+	unsigned char* pImageData{ nullptr };
+	LoadImage("container.jpg", pImageData);
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
