@@ -34,8 +34,11 @@ void DrawTriangleWithUniform();
 void InitializeTriangleWithMoreAttrib();
 void DrawTriangleWithMoreAttrib();
 
-// 加载Image
-bool LoadImage(const std::string& strImageFile, unsigned char* pData);
+// 绘制带有纹理的矩形
+bool InitializeRectangleTexture();
+void DrawRectangleTexture();
+
+float s_fLinearParam{ 0.2f };
 
 int main()
 {
@@ -66,14 +69,14 @@ int main()
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(pWindow, Framebuffer_size_callback);
 
-	// 初始化Shader
-	if (!InitializeShader())
-	{
-		std::cout << "Failed to intialize shaders." << std::endl;
-		glfwTerminate();
+	//// 初始化Shader
+	//if (!InitializeShader())
+	//{
+	//	std::cout << "Failed to intialize shaders." << std::endl;
+	//	glfwTerminate();
 
-		return -1;
-	}
+	//	return -1;
+	//}
 
 	// 线框模式
 	//EnableWireframwMode();
@@ -91,10 +94,16 @@ int main()
 	//InitializeTwoTriangleWithTwoVBO();
 
 	// 添加顶点颜色属性，并绘制三角形
-	InitializeTriangleWithMoreAttrib();
+	//InitializeTriangleWithMoreAttrib();
 
-	unsigned char* pImageData{ nullptr };
-	LoadImage("container.jpg", pImageData);
+	if (!InitializeRectangleTexture())
+	{
+		std::cout << "Failed to intialize draw." << std::endl;
+		glfwTerminate();
+
+		return -1;
+	}
+
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
@@ -122,7 +131,10 @@ int main()
 		//DrawTriangleWithUniform();
 
 		// 添加顶点颜色属性绘制三角形
-		DrawTriangleWithMoreAttrib();
+		//DrawTriangleWithMoreAttrib();
+
+		// 绘制带有纹理贴图的矩形
+		DrawRectangleTexture();
 
 		// 检查并调用事件
 		glfwPollEvents();
@@ -146,5 +158,21 @@ void ProcessInput(GLFWwindow* pWindow)
 	if (glfwGetKey(pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(pWindow, true);
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		s_fLinearParam += 0.005f;
+		if (s_fLinearParam > 1.0f)
+		{
+			s_fLinearParam = 0.f;
+		}
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		s_fLinearParam -= 0.005f;
+		if (s_fLinearParam < 0.0f)
+		{
+			s_fLinearParam = 1.f;
+		}
 	}
 }
