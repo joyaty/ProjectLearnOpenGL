@@ -9,6 +9,9 @@ layout (location = 2) in vec2 aVertexCoord;
 out vec3 vColor;
 out vec2 vTexCoord;
 
+// Uniform
+uniform mat4 u_transform;
+
 void main()
 {
     // 输出变量
@@ -16,5 +19,5 @@ void main()
     vTexCoord = aVertexCoord;
 
     // 内建变量
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = u_transform * vec4(aPos, 1.0);
 }

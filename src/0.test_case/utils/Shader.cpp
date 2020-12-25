@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 // Shader根目录
 static const std::string strShaderBasePath = "../../../res/shaders/";
@@ -121,5 +122,15 @@ void Shader::setFloat(const std::string& strUniformName, float fValue) const
 	if (nLocation >= 0)
 	{
 		glUniform1f(nLocation, fValue);
+	}
+}
+
+void Shader::setMatrix4f(const std::string& strUniformName, const glm::mat4& mat4Transform)
+{
+	int nLocation = glGetUniformLocation(m_nProgramId, strUniformName.c_str());
+	if (nLocation >= 0)
+	{
+		// 参数1：Uniform Location / 参数2：矩阵个数 / 参数3：是否进行矩阵转置(行列互换，Transpose)，OpenGL开发者通常使用列主序布局，而GLM默认也是列主序布局，因此不需要转置，设为false / 参数4：矩阵数据
+		glUniformMatrix4fv(nLocation, 1, GL_FALSE, glm::value_ptr(mat4Transform));
 	}
 }

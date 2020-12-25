@@ -2,9 +2,13 @@
 #include <string>
 #include <iostream>
 #include <glad/glad.h>
+#include <glfw3.h>
 #include "utils/Shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include"utils/stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Image相对根目录
 static const std::string strImageBasePath = "../../../res/images/";
@@ -136,6 +140,14 @@ void DrawRectangleTexture()
 	// 启用Shader
 	shaderWithTexture.use();
 	shaderWithTexture.setFloat("ulinearParam", s_fLinearParam);
+
+	// 通过Uniform传递变换矩阵
+	glm::mat4 transMat{ glm::mat4(1.0f) };
+	float fTime = glfwGetTime();
+	transMat = glm::translate(transMat, glm::vec3(0.5f, -0.5f, 0.f));
+	transMat = glm::rotate(transMat, fTime, glm::vec3(0, 0, 1));
+	transMat = glm::scale(transMat, glm::vec3(0.5f, 0.5f, 0.5f));
+	shaderWithTexture.setMatrix4f("u_transform", transMat);
 
 	// 绑定纹理
 	glActiveTexture(GL_TEXTURE0);
