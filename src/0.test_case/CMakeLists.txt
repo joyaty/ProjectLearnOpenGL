@@ -6,6 +6,7 @@ message("PROJECT_NAME = " ${PROJECT_NAME})
 
 include_directories(${PROJECT_SOURCE_DIR}/../../external/glfw/include)
 include_directories(${PROJECT_SOURCE_DIR}/../../external/glad/include)
+include_directories(${PROJECT_SOURCE_DIR}/../../external/glm.0.9.9.8/include)
 
 link_directories(${PROJECT_SOURCE_DIR}/../../external/glfw/lib)
 
@@ -16,6 +17,7 @@ utils/Shader.cpp
 utils/Shader.h
 utils/stb_image.h
 draw_triangle.cpp
+test_texture.cpp
 main.cpp
 )
 
