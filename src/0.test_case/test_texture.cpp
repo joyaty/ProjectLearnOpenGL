@@ -144,9 +144,9 @@ void DrawRectangleTexture()
 	// 通过Uniform传递变换矩阵
 	glm::mat4 transMat{ glm::mat4(1.0f) };
 	float fTime = glfwGetTime();
-	transMat = glm::translate(transMat, glm::vec3(0.5f, -0.5f, 0.f));
 	transMat = glm::rotate(transMat, fTime, glm::vec3(0, 0, 1));
-	transMat = glm::scale(transMat, glm::vec3(0.5f, 0.5f, 0.5f));
+	transMat = glm::scale(transMat, glm::vec3(0.5f, 0.5f, 1.0f));
+	transMat = glm::translate(transMat, glm::vec3(0.5f, -0.5f, 0.f));
 	shaderWithTexture.setMatrix4f("u_transform", transMat);
 
 	// 绑定纹理
@@ -159,6 +159,19 @@ void DrawRectangleTexture()
 	glBindVertexArray(VAO_DrawRectangleWithTexture);
 	// 绘制矩形
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+	// 通过Uniform传递变换矩阵
+	transMat = glm::mat4(1.0f);
+	transMat = glm::translate(transMat, glm::vec3(-0.5f, 0.5f, 0.f));
+	transMat = glm::rotate(transMat, -fTime, glm::vec3(0, 0, 1));
+	transMat = glm::scale(transMat, glm::vec3(glm::sin(fTime), glm::sin(fTime), 1.f));
+	shaderWithTexture.setMatrix4f("u_transform", transMat);
+
+	// 绘制矩形
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
 	// 解绑VAO
 	glBindVertexArray(0);
 }
