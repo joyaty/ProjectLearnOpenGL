@@ -1,4 +1,4 @@
-#ifndef GLM_SETUP_INCLUDED
+﻿#ifndef GLM_SETUP_INCLUDED
 
 #include <cassert>
 #include <cstddef>
@@ -841,7 +841,7 @@ namespace detail
 #if ((GLM_CONFIG_SIMD == GLM_ENABLE) || (GLM_CONFIG_SWIZZLE == GLM_SWIZZLE_OPERATOR) || (GLM_CONFIG_ALIGNED_GENTYPES == GLM_ENABLE))
 #	define GLM_CONFIG_ANONYMOUS_STRUCT GLM_ENABLE
 #else
-#	define GLM_CONFIG_ANONYMOUS_STRUCT GLM_DISABLE
+#	define GLM_CONFIG_ANONYMOUS_STRUCT GLM_ENABLE // GLM_DISABLE
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -24,6 +24,9 @@ extern float s_fLinearParam;
 
 unsigned int GenerateTexture(const std::string& strImageFile)
 {
+	// 设置stb_image库加载图片时翻转Y轴
+	stbi_set_flip_vertically_on_load(true);
+
 	// 创建纹理引用ID
 	unsigned int nTextureId;
 	glGenTextures(1, &nTextureId);
@@ -65,9 +68,6 @@ unsigned int GenerateTexture(const std::string& strImageFile)
 
 bool InitializeRectangleTexture()
 {
-	// 设置stb_image库加载图片时翻转Y轴
-	stbi_set_flip_vertically_on_load(true);
-
 	// 初始化Shader
 	bool bSuccess = shaderWithTexture.initialize("vertex_shader_with_tex_coord.vs", "fragment_shader_with_tex_coord.fs");
 	if (!bSuccess) { return false; }

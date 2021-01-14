@@ -18,6 +18,7 @@ utils/Shader.h
 utils/stb_image.h
 draw_triangle.cpp
 test_texture.cpp
+test_transformation.cpp
 main.cpp
 )
 

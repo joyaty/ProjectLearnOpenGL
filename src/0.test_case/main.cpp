@@ -38,6 +38,10 @@ void DrawTriangleWithMoreAttrib();
 bool InitializeRectangleTexture();
 void DrawRectangleTexture();
 
+// 测试三维变换
+bool InitializeTest3DTransformation();
+void DrawTest3DTransformation();
+
 float s_fLinearParam{ 0.2f };
 
 int main()
@@ -49,7 +53,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* pWindow = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* pWindow = glfwCreateWindow(1280, 720, "LearnOpenGL", NULL, NULL);
 	if (pWindow == NULL)
 	{
 		std::cout << "Failed to create GLFW window." << std::endl;
@@ -66,7 +70,7 @@ int main()
 		return -1;
 	}
 
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, 1280, 720);
 	glfwSetFramebufferSizeCallback(pWindow, Framebuffer_size_callback);
 
 	//// 初始化Shader
@@ -79,7 +83,7 @@ int main()
 	//}
 
 	// 线框模式
-	//EnableWireframwMode();
+	// EnableWireframwMode();
 
 	// 初始化三角形的顶点
 	//InitializeTriangleVertex();
@@ -96,7 +100,11 @@ int main()
 	// 添加顶点颜色属性，并绘制三角形
 	//InitializeTriangleWithMoreAttrib();
 
-	if (!InitializeRectangleTexture())
+	// 绘制带有纹理的矩形
+	//if (!InitializeRectangleTexture())
+
+	// 测试三维变换
+	if (!InitializeTest3DTransformation())
 	{
 		std::cout << "Failed to intialize draw." << std::endl;
 		glfwTerminate();
@@ -104,7 +112,7 @@ int main()
 		return -1;
 	}
 
-
+	glEnable(GL_DEPTH_TEST);
 	// 渲染循环
 	while (!glfwWindowShouldClose(pWindow))
 	{
@@ -113,7 +121,7 @@ int main()
 
 		// 渲染指令
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//// 绘制三角形
 		//DrawTriangle();
@@ -134,7 +142,10 @@ int main()
 		//DrawTriangleWithMoreAttrib();
 
 		// 绘制带有纹理贴图的矩形
-		DrawRectangleTexture();
+		//DrawRectangleTexture();
+
+		// 测试三维变换
+		DrawTest3DTransformation();
 
 		// 检查并调用事件
 		glfwPollEvents();
