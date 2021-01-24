@@ -2,8 +2,11 @@
 
 #include<glad/glad.h>
 #include<glfw3.h>
+#include<glm/glm.hpp>
 
 void Framebuffer_size_callback(GLFWwindow*, int, int);
+void MouseMovementEvent_callback(GLFWwindow*, double posX, double posY);
+void MouseMiddleScrollEvent_callback(GLFWwindow* pWindow, double offsetX, double offsetY);
 void ProcessInput(GLFWwindow*);
 
 // 初始化Shader
@@ -44,6 +47,23 @@ void DrawTest3DTransformation();
 
 float s_fLinearParam{ 0.2f };
 
+float s_fLastFrameTime{ 0.f };
+float s_fCameraSpeed{ 2.5f };
+extern glm::vec3 s_vec3CameraPosition;
+extern glm::vec3 s_vec3CameraDirection;
+extern float s_fFov;
+
+float s_fMouseLastPosX{ 1280 / 2 };
+float s_fMouseLastPosY{ 720 / 2 };
+static bool s_bInitializeMouse{ false };
+float s_fMouseSensitivity = 0.01f;	// 鼠标灵敏度
+
+// 摄像机俯仰角
+float s_CameraPitch = 0.0f;
+// 摄像机偏航角
+float s_CameraYaw = -90.0f;
+
+
 int main()
 {
 	// std::cout << "Hello, CMake" << std::endl;
@@ -72,6 +92,13 @@ int main()
 
 	glViewport(0, 0, 1280, 720);
 	glfwSetFramebufferSizeCallback(pWindow, Framebuffer_size_callback);
+
+	// 设置GLFW窗口在Focus时隐藏光标
+	// glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// 设置鼠标移动事件监听
+	glfwSetCursorPosCallback(pWindow, MouseMovementEvent_callback);
+	// 设置鼠标滑轮事件监听
+	glfwSetScrollCallback(pWindow, MouseMiddleScrollEvent_callback);
 
 	//// 初始化Shader
 	//if (!InitializeShader())
@@ -166,8 +193,66 @@ void Framebuffer_size_callback(GLFWwindow* pWindow, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+void MouseMovementEvent_callback(GLFWwindow*, double posX, double posY)
+{
+	if (!s_bInitializeMouse)
+	{
+		s_fMouseLastPosX = posX;
+		s_fMouseLastPosY = posY;
+
+		s_bInitializeMouse = true;
+	}
+
+	float fOffsetX = posX - s_fMouseLastPosX;
+	float fOffsetY = s_fMouseLastPosY - posY;
+	s_fMouseLastPosX = posX;
+	s_fMouseLastPosY = posY;
+
+	fOffsetX *= s_fMouseSensitivity;
+	fOffsetY *= s_fMouseSensitivity;
+
+	s_CameraYaw += fOffsetX;
+	s_CameraPitch += fOffsetY;
+
+	// 限制俯仰角范围
+	if (s_CameraPitch > 89.0f)
+	{
+		s_CameraPitch = 89.0f;
+	}
+	else if (s_CameraPitch < -89.0f)
+	{
+		s_CameraPitch= -89.0f;
+	}
+
+	float fDistance = glm::distance(glm::vec3(0, 0, 0), s_vec3CameraDirection);
+	s_vec3CameraDirection.x = fDistance * cos(s_CameraPitch) * cos(s_CameraYaw);
+	s_vec3CameraDirection.y = fDistance * sin(s_CameraPitch);
+	s_vec3CameraDirection.z = fDistance * cos(s_CameraPitch) * sin(s_CameraYaw);
+
+	s_vec3CameraDirection = glm::normalize(s_vec3CameraDirection);
+}
+
+void MouseMiddleScrollEvent_callback(GLFWwindow* pWindow, double offsetX, double offsetY)
+{
+	// 调整投影矩阵FOV角度大小
+	s_fFov -= (float)offsetY;
+
+	if (s_fFov > 60.0f)
+	{
+		s_fFov = 60.0f;
+	}
+	else if (s_fFov < 1.0f)
+	{
+		s_fFov = 1.0f;
+	}
+}
+
 void ProcessInput(GLFWwindow* pWindow)
 {
+	float fCurrentFrameTime = glfwGetTime();
+	float fDeltaTime = fCurrentFrameTime - s_fLastFrameTime;
+	s_fLastFrameTime = fCurrentFrameTime;
+
 	if (glfwGetKey(pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(pWindow, true);
@@ -187,5 +272,29 @@ void ProcessInput(GLFWwindow* pWindow)
 		{
 			s_fLinearParam = 1.f;
 		}
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		float fCameraSpeed = s_fCameraSpeed * fDeltaTime;
+		s_vec3CameraPosition += fCameraSpeed * glm::normalize(s_vec3CameraDirection);
+
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		float fCameraSpeed = s_fCameraSpeed * fDeltaTime;
+		s_vec3CameraPosition -= fCameraSpeed * glm::normalize(s_vec3CameraDirection);
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		float fCameraSpeed = s_fCameraSpeed * fDeltaTime;
+		glm::vec3 vec3Right = glm::normalize(glm::cross(s_vec3CameraDirection, glm::vec3(0.0f, 1.0f, 0.0f)));
+		s_vec3CameraPosition -= fCameraSpeed * vec3Right;
+
+	}
+	else if (glfwGetKey(pWindow, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		float fCameraSpeed = s_fCameraSpeed * fDeltaTime;
+		glm::vec3 vec3Right = glm::normalize(glm::cross(s_vec3CameraDirection, glm::vec3(0.0f, 1.0f, 0.0f)));
+		s_vec3CameraPosition += fCameraSpeed * vec3Right;
 	}
 }

@@ -16,6 +16,9 @@ static unsigned int Texture_Id1;
 static unsigned int Texture_Id2;
 static Shader shaderTestTransform;
 
+glm::vec3 s_vec3CameraPosition = glm::vec3(0.0f, 0.0f, 5.0f);
+glm::vec3 s_vec3CameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+float s_fFov = 45.0f;
 
 bool InitializeTest3DTransformation()
 {
@@ -132,10 +135,11 @@ void DrawTest3DTransformation()
 	glBindVertexArray(VAO_DrawTest3DTransformation);
 	// 观察矩阵
 	glm::mat4 matView = glm::mat4(1.0f);
-	matView = glm::translate(matView, glm::vec3(0, 0, -5.0f));
+	// 摄像机位置, 观察位置, 世界坐标Y轴正方向, 构建变换观察空间的View Matrix
+	matView = glm::lookAt(s_vec3CameraPosition, s_vec3CameraPosition + s_vec3CameraDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 	shaderTestTransform.setMatrix4f("uMatView", matView);
 	// 投影矩阵
-	glm::mat4 matProjection = glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
+	glm::mat4 matProjection = glm::perspective(glm::radians(s_fFov), 16.0f / 9.0f, 0.1f, 100.0f);
 	shaderTestTransform.setMatrix4f("uMatProjection", matProjection);
 
 	glm::vec3 cubePositions[] = {
